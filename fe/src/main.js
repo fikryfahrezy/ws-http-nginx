@@ -34,7 +34,7 @@ socket.on("connected", (msg) => {
   console.log("message from socket io", msg);
 });
 
-const ws = new WebSocket("ws://localhost:3000/ws");
+const ws = new WebSocket("ws://" + (BACKEND_URL || "") + "/ws");
 
 // Connection opened
 ws.addEventListener("open", (event) => {
