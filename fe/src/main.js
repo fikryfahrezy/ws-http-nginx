@@ -34,7 +34,9 @@ socket.on("connected", (msg) => {
   console.log("message from socket io", msg);
 });
 
-const ws = new WebSocket((BACKEND_URL || "").replace(/^https?/, "ws") + "/ws");
+const ws = new WebSocket(
+  (BACKEND_URL || "").replace("http", "ws").replace("https", "wss") + "/ws"
+);
 
 // Connection opened
 ws.addEventListener("open", (event) => {
