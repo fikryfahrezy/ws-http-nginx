@@ -24,7 +24,9 @@ document.querySelector("#app").innerHTML = `
 
 setupCounter(document.querySelector("#counter"));
 
-const socket = io("http://localhost:3000", {
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+const socket = io(BACKEND_URL, {
   path: "/io/",
 });
 
@@ -45,7 +47,7 @@ ws.addEventListener("message", (event) => {
   console.log("Message from WSS server ", event.data);
 });
 
-fetch("http://localhost:3000/auth")
+fetch((BACKEND_URL || "") + "/auth")
   .then((res) => {
     return res.json();
   })

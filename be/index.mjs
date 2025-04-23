@@ -1,11 +1,17 @@
 import cors from "cors";
 import express from "express";
 import { createServer } from "node:http";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Server } from "socket.io";
 import { WebSocketServer } from "ws";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 app.use(cors());
+app.use(express.static("dist"));
 
 const server = createServer(app);
 
@@ -19,6 +25,10 @@ const io = new Server(server, {
 const wss = new WebSocketServer({ noServer: true });
 
 app.get("/", (req, res) => {
+  res.sendFile(join(__dirname, "dist", "index.html"));
+});
+
+app.get("/hello", (req, res) => {
   res.json({ hello: "world" });
 });
 

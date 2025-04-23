@@ -1,0 +1,10 @@
+services:
+  fe:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    env_file:
+      - path: ./.env
+        required: true
+    ports:
+      - "4173:80"

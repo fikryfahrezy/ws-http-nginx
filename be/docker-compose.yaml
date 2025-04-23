@@ -1,8 +1,8 @@
 services:
   be:
     build:
-      context: ./
-      dockerfile: ./Dockerfile
+      context: ../
+      dockerfile: ./be/Dockerfile
   nginx:
     image: nginx:1.27.4-bookworm
     restart: unless-stopped

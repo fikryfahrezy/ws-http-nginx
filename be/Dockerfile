@@ -1,22 +1,42 @@
 FROM node:22.9.0-bookworm AS base
 
-# 1. Install dependencies only when needed
-FROM base AS deps
-
+# Step 1
+FROM base AS fedeps
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY fe/package.json fe/yarn.lock* fe/package-lock.json* fe/pnpm-lock.yaml* ./
+
 # https://github.com/pnpm/pnpm/issues/9029
 # https://github.com/nodejs/corepack/issues/612
 RUN npm install -g corepack@latest
 RUN corepack enable pnpm
 RUN pnpm i --frozen-lockfile
 
-# 2. Rebuild the source code only when needed
-FROM base AS builder
+# Step 2
+FROM base AS febuilder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+
+COPY --from=fedeps /app/node_modules ./node_modules
+COPY fe/ .
+
+RUN npm run build
+
+# Step 3
+FROM base AS bedeps
+WORKDIR /app
+
+COPY be/package.json be/yarn.lock* be/package-lock.json* be/pnpm-lock.yaml* ./
+
+RUN npm install -g corepack@latest
+RUN corepack enable pnpm
+RUN pnpm i --frozen-lockfile
+
+# Step 4
+FROM base AS bebuilder
+WORKDIR /app
+
+COPY --from=bedeps /app/node_modules ./node_modules
+COPY be/ .
+COPY --from=febuilder /app/dist ./dist
 
 CMD ["node", "index.mjs"]
